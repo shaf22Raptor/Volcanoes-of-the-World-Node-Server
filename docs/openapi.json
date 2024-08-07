@@ -1,0 +1,232 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "World City API",
+        "description": "This is a simple Express API based on the World Cities Database. It supports basic city and province listings, along with filtering based on Country Code",
+        "version": "1.0.0",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "email": "j.hogan@qut.edu.au"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
+    "tags":[
+        { 
+          "name":"query",
+          "description":"API queries based on city and optional country code."
+        },
+        { 
+          "name":"update",
+          "description":"API calls that can update information about cities in the database."
+        }
+    ],
+    "paths": {
+        "/api/city": {
+            "get": {
+                "tags": [
+                    "query"
+                ],
+                "summary": "List cities and provinces",
+                "description": "Full listing of cities and their provinces for the database",
+                "operationId": "listCitiesAndDistricts",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "Error": {
+                                    "type": "string",
+                                    "enum": [
+                                        "true",
+                                        "false"
+                                    ]
+                                },
+                                "Message": {
+                                    "type": "string",
+                                    "enum": [
+                                        "Success",
+                                        "Failure"
+                                    ]
+                                },
+                                "City": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "district": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/city/{CountryCode}": {
+            "get": {
+                "tags": [
+                    "query"
+                ],
+                "summary": "List cities in a given country",
+                "parameters": [
+                    {
+                        "name": "CountryCode",
+                        "in": "path",
+                        "description": "Code identifying country to list cities in",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "AUS"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Error": {
+                                            "type": "string",
+                                            "enum": [
+                                                "true",
+                                                "false"
+                                            ]
+                                        },
+                                        "Message": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Success",
+                                                "Failure"
+                                            ]
+                                        },
+                                        "Cities": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ID": {
+                                                        "type": "number",
+                                                        "example": 130
+                                                    },
+                                                    "Name": {
+                                                        "type": "string",
+                                                        "example": "Sydney"
+                                                    },
+                                                    "CountryCode": {
+                                                        "type": "string",
+                                                        "example": "AUS"
+                                                    },
+                                                    "District": {
+                                                        "type": "string",
+                                                        "example": "Victoria"
+                                                    },
+                                                    "Population": {
+                                                        "type": "number",
+                                                        "example": 3276207
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/update": {
+            "post": {
+                "tags": [
+                    "update"
+                ],
+                "summary": "Change the population of a city in a given country",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "City": {
+                                        "description": "Name of the city to update the population of",
+                                        "required": true,
+                                        "type": "string",
+                                        "example": "Sydney"           
+                                    },
+                                    "CountryCode": {
+                                        "description": "Code identifying country that city is located in",
+                                        "required": true,
+                                        "type": "string",
+                                        "example": "AUS"
+                                    },
+                                    "Pop": {
+                                        "description": "New population to change city to",
+                                        "required": true,
+                                        "type": "number",
+                                        "example": 10000000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Successful update Sydney"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Database error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Database error - not updated"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
